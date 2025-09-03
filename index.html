@@ -7,7 +7,10 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
+    /* General body styling */
     body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f7f7f7; }
+    
+    /* Header styling */
     header {
       background: #222;
       color: #fff;
@@ -26,9 +29,13 @@
       font-size: 1.2em;
       color: #e0e0e0;
     }
+
+    /* QR container styling */
     #qr-container { position: relative; display: inline-block; margin-top: 20px; }
     #logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 60px; max-height: 60px; }
     .frame { border: 10px solid #000; padding: 10px; display: inline-block; background: #fff; border-radius: 16px; }
+
+    /* Input section styling */
     .input-section {
       background: #fff;
       display: inline-block;
@@ -43,6 +50,15 @@
       border-radius: 5px;
       border: 1px solid #bbb;
       font-size: 1em;
+    }
+    .input-section input[type="color"] {
+      width: 100px;
+      height: 34px;
+      padding: 0;
+      border: none;
+      border-radius: 5px;
+      margin-left: 10px;
+      vertical-align: middle;
     }
     .input-section input[type="file"] {
       margin-top: 10px;
@@ -66,13 +82,23 @@
 <body>
   <header>
     <h1>QR Code Generator</h1>
-    <p>Create stylish QR codes with your logo and a custom frame.</p>
+    <p>Create stylish QR codes with your logo.</p>
   </header>
   <div class="input-section">
     <h2>Step 1: Enter Details</h2>
+    <!-- Input for URL -->
     <input type="text" id="url" placeholder="Enter URL"><br><br>
-    <input type="file" id="logo-upload" accept="image/*"><br><br>
+    <!-- Input for QR code color -->
+    <label for="color">QR Code Color:</label>
+    <input type="color" id="color" value="#000000" style="vertical-align:middle;"><br><br>
+    <!-- Input for uploading logo -->
+    <input type="file" id="logo-upload" accept="image/*" onchange="previewLogo()"><br>
+    <div id="logo-preview-container" style="margin:10px 0;">
+      <span style="font-size:0.95em;color:#555;">Logo Preview:</span><br>
+      <img id="logo-preview" src="" alt="Logo Preview" style="max-width:60px;max-height:60px;display:none;border:1px solid #ccc;border-radius:8px;background:#fff;padding:4px;">
+    </div>
     <h2>Step 2: Frame Style</h2>
+    <!-- Radio buttons for frame style -->
     <label>
       <input type="radio" name="frame-style" value="with" checked>
       With Frame
@@ -82,26 +108,51 @@
       No Frame
     </label>
     <br>
+    <!-- Buttons for generating and downloading QR codes -->
     <button onclick="generateQR()">Generate QR</button>
     <button onclick="downloadQR('png')">Download PNG</button>
     <button onclick="downloadQR('svg')">Download SVG</button>
   </div>
   <div id="qr-container" class="frame">
-    <div id="qrcode"></div>
+    <div id="qrcode">
+      <img id="default-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Welcome%20to%20QR%20Generator" alt="Default QR Code" style="width:200px;height:200px;">
+    </div>
     <img id="logo" src="" alt="Logo" hidden>
   </div>
 
   <script>
+    // Function to preview the uploaded logo
+    function previewLogo() {
+      const logoInput = document.getElementById('logo-upload');
+      const logoPreview = document.getElementById('logo-preview');
+      if (logoInput.files && logoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          logoPreview.src = e.target.result;
+          logoPreview.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(logoInput.files[0]);
+      } else {
+        logoPreview.src = '';
+        logoPreview.style.display = 'none';
+      }
+    }
+
+    // Function to generate the QR code
     function generateQR() {
       const url = document.getElementById('url').value;
+      const color = document.getElementById('color').value;
       document.getElementById('qrcode').innerHTML = '';
       new QRCode(document.getElementById('qrcode'), {
         text: url,
         width: 200,
         height: 200,
+        colorDark: color,
+        colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
 
+      // Add logo to the QR code
       const logoInput = document.getElementById('logo-upload');
       const logo = document.getElementById('logo');
       if (logoInput.files[0]) {
@@ -125,6 +176,7 @@
       }
     }
 
+    // Function to download the QR code as an image
     function downloadQR(format) {
       const qrContainer = document.getElementById('qr-container');
       html2canvas(qrContainer).then(canvas => {
@@ -134,6 +186,11 @@
         link.click();
       });
     }
+
+    // Show default QR code on load
+    window.onload = function() {
+      document.getElementById('qrcode').innerHTML = '<img id="default-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Welcome%20to%20QR%20Generator" alt="Default QR Code" style="width:200px;height:200px;">';
+    };
   </script>
 </body>
 </html>
