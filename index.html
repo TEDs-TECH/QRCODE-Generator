@@ -3,22 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <title>QR Code Generator with Logo & Frame</title>
-  https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js</script>
+  <!-- Add QRCode.js and html2canvas CDN links -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    body { font-family: Arial; text-align: center; padding: 20px; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f7f7f7; }
+    header {
+      background: #222;
+      color: #fff;
+      padding: 30px 0 20px 0;
+      margin-bottom: 30px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      letter-spacing: 2px;
+    }
+    header p {
+      margin: 10px 0 0 0;
+      font-size: 1.2em;
+      color: #e0e0e0;
+    }
     #qr-container { position: relative; display: inline-block; margin-top: 20px; }
     #logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 60px; max-height: 60px; }
-    .frame { border: 10px solid #000; padding: 10px; display: inline-block; }
+    .frame { border: 10px solid #000; padding: 10px; display: inline-block; background: #fff; border-radius: 16px; }
+    .input-section {
+      background: #fff;
+      display: inline-block;
+      padding: 20px 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+    .input-section input[type="text"] {
+      width: 300px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #bbb;
+      font-size: 1em;
+    }
+    .input-section input[type="file"] {
+      margin-top: 10px;
+    }
+    .input-section button {
+      margin: 10px 5px 0 5px;
+      padding: 8px 18px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: none;
+      background: #222;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .input-section button:hover {
+      background: #444;
+    }
   </style>
 </head>
 <body>
-  <h2>QR Code Generator with Logo & Frame</h2>
-  <input type="text" id="url" placeholder="Enter URL" style="width: 300px;"><br><br>
-  <input type="file" id="logo-upload" accept="image/*"><br><br>
-  <button onclick="generateQR()">Generate QR</button>
-  <button onclick="downloadQR('png')">Download PNG</button>
-  <button onclick="downloadQR('svg')">Download SVG</button>
-
+  <header>
+    <h1>QR Code Generator</h1>
+    <p>Create stylish QR codes with your logo and a custom frame.</p>
+  </header>
+  <div class="input-section">
+    <h2>Step 1: Enter Details</h2>
+    <input type="text" id="url" placeholder="Enter URL"><br><br>
+    <input type="file" id="logo-upload" accept="image/*"><br><br>
+    <h2>Step 2: Frame Style</h2>
+    <label>
+      <input type="radio" name="frame-style" value="with" checked>
+      With Frame
+    </label>
+    <label style="margin-left:20px;">
+      <input type="radio" name="frame-style" value="none">
+      No Frame
+    </label>
+    <br>
+    <button onclick="generateQR()">Generate QR</button>
+    <button onclick="downloadQR('png')">Download PNG</button>
+    <button onclick="downloadQR('svg')">Download SVG</button>
+  </div>
   <div id="qr-container" class="frame">
     <div id="qrcode"></div>
     <img id="logo" src="" alt="Logo" hidden>
@@ -47,6 +114,15 @@
       } else {
         logo.hidden = true;
       }
+
+      // Frame selection logic
+      const frameStyle = document.querySelector('input[name="frame-style"]:checked').value;
+      const qrContainer = document.getElementById('qr-container');
+      if (frameStyle === 'with') {
+        qrContainer.classList.add('frame');
+      } else {
+        qrContainer.classList.remove('frame');
+      }
     }
 
     function downloadQR(format) {
@@ -59,6 +135,5 @@
       });
     }
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4..min.js</script>
 </body>
 </html>
