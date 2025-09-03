@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code Generator with Logo & Frame</title>
+  https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js</script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; }
+    #qr-container { position: relative; display: inline-block; margin-top: 20px; }
+    #logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 60px; max-height: 60px; }
+    .frame { border: 10px solid #000; padding: 10px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h2>QR Code Generator with Logo & Frame</h2>
+  <input type="text" id="url" placeholder="Enter URL" style="width: 300px;"><br><br>
+  <input type="file" id="logo-upload" accept="image/*"><br><br>
+  <button onclick="generateQR()">Generate QR</button>
+  <button onclick="downloadQR('png')">Download PNG</button>
+  <button onclick="downloadQR('svg')">Download SVG</button>
+
+  <div id="qr-container" class="frame">
+    <div id="qrcode"></div>
+    <img id="logo" src="" alt="Logo" hidden>
+  </div>
+
+  <script>
+    function generateQR() {
+      const url = document.getElementById('url').value;
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById('qrcode'), {
+        text: url,
+        width: 200,
+        height: 200,
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      const logoInput = document.getElementById('logo-upload');
+      const logo = document.getElementById('logo');
+      if (logoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          logo.src = e.target.result;
+          logo.hidden = false;
+        };
+        reader.readAsDataURL(logoInput.files[0]);
+      } else {
+        logo.hidden = true;
+      }
+    }
+
+    function downloadQR(format) {
+      const qrContainer = document.getElementById('qr-container');
+      html2canvas(qrContainer).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `qr_code.${format}`;
+        link.href = canvas.toDataURL(`image/${format === 'svg' ? 'svg+xml' : 'png'}`);
+        link.click();
+      });
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4..min.js</script>
+</body>
+</html>
